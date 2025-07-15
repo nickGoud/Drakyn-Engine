@@ -1,2 +1,2 @@
 # Drakyn-Engine
-A Vulkan rendering engine.
+A game engine built from scratch.
