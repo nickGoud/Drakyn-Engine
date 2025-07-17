@@ -3,6 +3,11 @@
  * Date created: 20-06-2025
  * Last modified: 20-06-2025
  */
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#define DEFAULT_WINDOW_WIDTH 800
+#define DEFAULT_WINDOW_HEIGHT 600
 
 class Application
 {
@@ -13,6 +18,8 @@ public:
     void run();
 
 private:
+    GLFWwindow *pWindow = NULL;
+
     void init();
     void main_loop();
     void cleanup();
