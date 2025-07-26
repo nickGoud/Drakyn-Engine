@@ -4,10 +4,6 @@
  * Last modified: 15-07-2025
  */
 
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f}; // DELETE THIS
 
 #include "application.h"
 
@@ -27,6 +23,7 @@ Application::~Application()
 
 void Application::run()
 {
+    // Initiate and build all needed assets.
     init();
     main_loop();
     cleanup();
@@ -57,6 +54,11 @@ void Application::init()
     }
 
     setGLFWCallbacks(pWindow);
+
+
+    // Initilize OpenGL
+    pOpenGLManager = new OpenGL_Manager();
+    pOpenGLManager->init();
 }
 
 void Application::main_loop()
@@ -75,7 +77,8 @@ void Application::main_loop()
 }
 
 void Application::cleanup()
-{
+{ 
+    delete pOpenGLManager;
     glfwTerminate();
 }
 
