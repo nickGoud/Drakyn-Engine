@@ -5,6 +5,27 @@ else
     EXE_EXT :=
 endif
 
+## Build shaders first.
+# Directory with shaders
+SHADER_DIR := shaders
+
+# Find all .glsl files in the shader directory
+SHADER_SRC := $(wildcard $(SHADER_DIR)/*.glsl)
+
+# Remove all previous headers
+	rm -rf ./shaders/*.h
+
+# Change .glsl to .h for output headers
+SHADER_HEADERS := $(SHADER_SRC:.glsl=.h)
+
+# Default target when you run `make`
+all: $(SHADER_HEADERS)
+	@echo "Shaders embedded into headers."
+
+# Rule to generate .h from .glsl using xxd
+$(SHADER_DIR)/%.h: $(SHADER_DIR)/%.glsl
+	@xxd -i $< > $@
+
 # Config
 CXX = g++
 SRC_DIR = .
@@ -37,25 +58,6 @@ DEBUG_OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(DEBUG_DIR)/%.o, $(wildcard $(SRC_DIR
 RELEASE_OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(RELEASE_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp)) \
                $(patsubst ./src/%.c, $(RELEASE_DIR)/%.o, $(GLAD_SRC))
 
-# Directory with your shaders
-SHADER_DIR := shaders
-
-# Find all .glsl files in the shader directory
-SHADER_SRC := $(wildcard $(SHADER_DIR)/*.glsl)
-
-# Change .glsl to .h for output headers
-SHADER_HEADERS := $(SHADER_SRC:.glsl=.h)
-
-# Default target when you run `make`
-all: $(SHADER_HEADERS)
-	@echo "Shaders embedded into headers."
-
-# Rule to generate .h from .glsl using xxd
-$(SHADER_DIR)/%.h: $(SHADER_DIR)/%.glsl
-	@echo "#pragma once" > $@
-	@xxd -i $< > $@
-	@echo "Embedded shader: $< -> $@"
-	
 # Default
 all: debug
 
@@ -98,6 +100,6 @@ copy-headers:
 
 # Clean
 clean:
-	rm -rf $(BUILD_DIR)/debug/*
+	rm -rf $(BUILD_DIR)/*
 
 .PHONY: all debug release clean copy-headers

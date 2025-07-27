@@ -2,22 +2,22 @@
  * name: opengl_manager.h
  * purpose: manage all OpenGL/GPU API operations.
  * date_created: 24-07-2025
- * date_modified: 24-07-2025
+ * date_modified: 27-07-2025
  */
 
 #include "globals.h"
 
-#include "shader_manager.h"
-
 #include <string>
+
 
 class OpenGL_Manager
 {
 private:
     unsigned int VBO;
-    unsigned int vertexShader;
 
-    ShaderManager* pShaderManager = nullptr;
+    unsigned int vertexShader, fragmentShader, shaderProgram;
+
+    bool _compileShaders();
 
 public:
     OpenGL_Manager();
