@@ -66,10 +66,15 @@ void Application::main_loop()
 
     while (!glfwWindowShouldClose(pWindow))
     {
+        // Handle inputs devices.
         processInput(pWindow);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Events, Physics, Sounds, Scripts, ETC.
+        // ...
+        // ...
+
+        // Graphics API draw function.
+        pOpenGLManager->draw_call();
 
         glfwSwapBuffers(pWindow);
         glfwPollEvents();

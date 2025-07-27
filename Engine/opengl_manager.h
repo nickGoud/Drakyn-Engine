@@ -9,21 +9,25 @@
 
 #include <string>
 
-
 class OpenGL_Manager
 {
 private:
-    unsigned int VBO;
-
+    unsigned int VBO, VAO;
     unsigned int vertexShader, fragmentShader, shaderProgram;
 
     bool _compileShaders();
+    bool _buildBuffers();
+
+    float vertices[9] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f}; // DELETE THIS
 
 public:
     OpenGL_Manager();
     ~OpenGL_Manager();
 
     void init();
-    void main_loop();
+    void draw_call();
     void cleanup();
 };

@@ -18,13 +18,16 @@
 
 bool OpenGL_Manager::_compileShaders()
 {
-    int result; // Symbol for errors.
+    std::cout << VERTEX_GLSL << std::endl;
+    std::cout << FRAGMENT_GLSL << std::endl;
+
+    int result;              // Symbol for errors.
     char infoLog[INFO_SIZE]; // Holds error information.
 
     // Build the vertex shader.
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-    const char* vertexShaderSource = (const char*)VERTEX_GLSL;
+    const char *vertexShaderSource = (const char *)VERTEX_GLSL;
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
@@ -36,12 +39,12 @@ bool OpenGL_Manager::_compileShaders()
         std::cout << "Vertex shader compilation failed: " << infoLog << std::endl;
         return false;
     }
-    std::cout << "Vertex shader compilation complete.";
+    std::cout << "Vertex shader compilation complete." << std::endl;
 
     // Build the fragment shader.
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    const char* fragmentShaderSource = (const char*)FRAGMENT_GLSL;
+    const char *fragmentShaderSource = (const char *)FRAGMENT_GLSL;
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
 
@@ -53,7 +56,7 @@ bool OpenGL_Manager::_compileShaders()
         std::cout << "Fragment shader compilation failed: " << infoLog << std::endl;
         return false;
     }
-    std::cout << "Fragment shader compilation complete.";
+    std::cout << "Fragment shader compilation complete." << std::endl;
 
     // Attach the shaders to OpenGL.
     shaderProgram = glCreateProgram();
@@ -69,17 +72,32 @@ bool OpenGL_Manager::_compileShaders()
         std::cout << "Shader program failed: " << infoLog << std::endl;
         return false;
     }
-    std::cout << "Shader program complete.";
+    std::cout << "Shader program complete." << std::endl;
 
-    glUseProgram(shaderProgram);
 
     // Clean up shaders
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Tell OpenGL how to read vertex data.
+    return true;
+}
+
+bool OpenGL_Manager::_buildBuffers()
+{
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
 
     return true;
 }
@@ -96,9 +114,10 @@ void OpenGL_Manager::init()
 {
     // Set up the address for the "Vertex Buffer Object".
     glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO);
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
 
     // Build shaders.
     if (!_compileShaders())
@@ -107,14 +126,28 @@ void OpenGL_Manager::init()
         return;
     }
     std::cout << "Built shaders." << std::endl;
-    
+
+    if (!_buildBuffers())
+    {
+        std::cout << "Failed to build frame buffers." << std::endl;
+        return;
+    }
+    std::cout << "Built frame buffers." << std::endl;
 }
 
-void OpenGL_Manager::main_loop()
+void OpenGL_Manager::draw_call()
 {
+    glUseProgram(shaderProgram);
+
+    // Draw
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void OpenGL_Manager::cleanup()
 {
 }
-

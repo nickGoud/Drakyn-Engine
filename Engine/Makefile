@@ -12,9 +12,6 @@ SHADER_DIR := shaders
 # Find all .glsl files in the shader directory
 SHADER_SRC := $(wildcard $(SHADER_DIR)/*.glsl)
 
-# Remove all previous headers
-	rm -rf ./shaders/*.h
-
 # Change .glsl to .h for output headers
 SHADER_HEADERS := $(SHADER_SRC:.glsl=.h)
 
