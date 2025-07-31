@@ -1,7 +1,7 @@
 /**
  * name: opengl_manager.cpp
  * date_created: 24-07-2025
- * date_modified: 27-07-2025
+ * date_modified: 28-07-2025
  */
 
 #include "opengl_manager.h"
@@ -74,7 +74,6 @@ bool OpenGL_Manager::_compileShaders()
     }
     std::cout << "Shader program complete." << std::endl;
 
-
     // Clean up shaders
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -84,19 +83,26 @@ bool OpenGL_Manager::_compileShaders()
 
 bool OpenGL_Manager::_buildBuffers()
 {
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO); // Vertex Array Object.
+    glGenBuffers(1, &VBO);      // Vertex Buffer Object.
+    glGenBuffers(1, &EBO);      // Element Buffer Object.
 
+    // Bind vertex array.
     glBindVertexArray(VAO);
 
+    // Copy vertices to OpenGL.
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Copy indices to OpenGL.
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Set vertex attributes pointers.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     glBindVertexArray(0);
 
     return true;
@@ -115,7 +121,7 @@ void OpenGL_Manager::init()
     // Set up the address for the "Vertex Buffer Object".
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -127,6 +133,7 @@ void OpenGL_Manager::init()
     }
     std::cout << "Built shaders." << std::endl;
 
+    // Build frame buffers.
     if (!_buildBuffers())
     {
         std::cout << "Failed to build frame buffers." << std::endl;
@@ -145,7 +152,9 @@ void OpenGL_Manager::draw_call()
 
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void OpenGL_Manager::cleanup()

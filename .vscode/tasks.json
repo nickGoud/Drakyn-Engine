@@ -2,6 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "make all",
+            "type": "shell",
+            "command": "cd Engine/; rm shaders/*.h; make clean; make",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build active file with glad",
             "type": "shell",
             "command": "/usr/bin/g++",

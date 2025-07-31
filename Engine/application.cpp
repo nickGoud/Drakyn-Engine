@@ -4,12 +4,12 @@
  * Last modified: 15-07-2025
  */
 
-
 #include "application.h"
 
 #include "glfw_callbacks.h"
 
 #include <stdio.h>
+#include <math.h>
 
 void processInput(GLFWwindow *window);
 
@@ -55,17 +55,24 @@ void Application::init()
 
     setGLFWCallbacks(pWindow);
 
-
     // Initilize OpenGL
     pOpenGLManager = new OpenGL_Manager();
     pOpenGLManager->init();
+
+    // Set delta
+    _set_delta();
 }
 
 void Application::main_loop()
 {
+    float delta_tick_rate = .5; // every x seconds the fps counter will update.
+    float delta_current_tick = 0.0;
 
     while (!glfwWindowShouldClose(pWindow))
     {
+        // Update delta
+        _set_delta();
+
         // Handle inputs devices.
         processInput(pWindow);
 
@@ -76,15 +83,39 @@ void Application::main_loop()
         // Graphics API draw function.
         pOpenGLManager->draw_call();
 
+        // Stable delta reading for user.
+        if (WINDOW_FRAME_COUNTER == true)
+        {
+            if (delta_current_tick >= delta_tick_rate)
+            {
+                std::string delta_str = std::to_string((int)(1.0 / delta));
+                glfwSetWindowTitle(pWindow, delta_str.c_str());
+
+                delta_current_tick = 0.0;
+            }
+            else
+            {
+                delta_current_tick += delta;
+            }
+        }
+
+        // Update Graphics.
         glfwSwapBuffers(pWindow);
         glfwPollEvents();
     }
 }
 
 void Application::cleanup()
-{ 
+{
     delete pOpenGLManager;
     glfwTerminate();
+}
+
+void Application::_set_delta()
+{
+    last_time = current_time;
+    current_time = glfwGetTime();
+    delta = current_time - last_time;
 }
 
 void processInput(GLFWwindow *window)

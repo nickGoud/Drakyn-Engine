@@ -32,4 +32,5 @@
 *.app
 
 ./Build
-./Test_Workspace
+./Editor
+./Game
